@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Admin — Panel de Administración de Negocios</title>
+  <meta name="description" content="Consola de gestión autoadministrable para dueños de negocios en la plataforma Nexus AI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#0b0f19">
+</head>
+<body>
+
+  <!-- BACKGROUND DECORATIONS -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="app-container">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-text">
+          <h1>NEXUS <span class="accent-text">ADMIN</span></h1>
+          <p>Consola de Gestión de Negocio</p>
+        </div>
+      </div>
+      <div class="header-session" id="header-session" style="display:none;">
+        <div class="session-info">
+          <div class="s-name" id="session-name">—</div>
+          <div class="s-role" id="session-role">—</div>
+        </div>
+        <button class="btn-logout" id="btn-logout"><i class="bx bx-log-out"></i> Salir</button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-content">
+      <div class="admin-layout">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="admin-sidebar">
+          <div class="card glass-card" id="admin-sidebar-card">
+
+            <!-- Business selector (shown only for super-admin) -->
+            <div id="biz-selector-wrapper" style="display:none; padding-bottom: 10px; border-bottom: 1px solid var(--border-glass); margin-bottom: 8px;">
+              <label class="biz-selector-label">Tienda Activa</label>
+              <select id="admin-restaurant-select" class="form-control"></select>
+            </div>
+
+            <button class="admin-tab active" data-panel="panel-products">
+              <i class="bx bx-food-menu"></i> Gestión de Productos
+            </button>
+            <button class="admin-tab" data-panel="panel-orders">
+              <i class="bx bx-receipt"></i> Pedidos
+              <span class="admin-badge" id="admin-pending-badge"></span>
+            </button>
+            <button class="admin-tab" data-panel="panel-promos">
+              <i class="bx bx-purchase-tag"></i> Promociones / Combos
+            </button>
+            <button class="admin-tab" data-panel="panel-settings">
+              <i class="bx bx-store"></i> Configuración Tienda
+            </button>
+
+          </div>
+        </div>
+
+        <!-- RIGHT MAIN PANEL -->
+        <div class="admin-main-panel">
+
+          <!-- A. PRODUCTS PANEL -->
+          <div id="panel-products" class="admin-subpanel active">
+            <div class="panel-header">
+              <h2><i class="bx bx-food-menu" style="color:var(--color-primary);"></i> Catálogo de Productos</h2>
+              <button class="primary-btn" id="btn-add-product">
+                <i class="bx bx-plus"></i> Agregar Producto
+              </button>
+            </div>
+            <div class="card glass-card table-card">
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Imagen</th>
+                      <th>Nombre</th>
+                      <th>Categoría</th>
+                      <th>Precio</th>
+                      <th>Descripción</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-products-list">
+                    <tr><td colspan="6"><div class="empty-state"><i class="bx bx-loader-alt bx-spin"></i><p>Cargando productos...</p></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- B. ORDERS PANEL -->
+          <div id="panel-orders" class="admin-subpanel">
+            <div class="panel-header">
+              <h2><i class="bx bx-receipt" style="color:var(--color-accent);"></i> Historial de Pedidos</h2>
+              <button class="primary-btn btn-danger btn-sm" id="btn-clear-orders">
+                <i class="bx bx-trash"></i> Limpiar Hoy
+              </button>
+            </div>
+            <!-- Stats -->
+            <div class="stats-bar">
+              <div class="stat-card glass-card">
+                <div class="stat-val text-warning" id="stat-pending">0</div>
+                <div class="stat-label">Pendientes</div>
+              </div>
+              <div class="stat-card glass-card">
+                <div class="stat-val text-info" id="stat-preparing">0</div>
+                <div class="stat-label">Preparando</div>
+              </div>
+              <div class="stat-card glass-card">
+                <div class="stat-val text-primary" id="stat-transit">0</div>
+                <div class="stat-label">En Ruta</div>
+              </div>
+              <div class="stat-card glass-card">
+                <div class="stat-val text-success" id="stat-completed">0</div>
+                <div class="stat-label">Entregados</div>
+              </div>
+            </div>
+            <div class="orders-list" id="admin-orders-list">
+              <div class="empty-state"><i class="bx bx-loader-alt bx-spin"></i><p>Cargando pedidos...</p></div>
+            </div>
+          </div>
+
+          <!-- C. PROMOS PANEL -->
+          <div id="panel-promos" class="admin-subpanel">
+            <div class="panel-header">
+              <h2><i class="bx bx-purchase-tag" style="color:var(--color-accent);"></i> Promociones y Combos</h2>
+              <button class="primary-btn" id="btn-add-promo">
+                <i class="bx bx-plus"></i> Nueva Promoción
+              </button>
+            </div>
+            <div class="promos-grid" id="admin-promos-list">
+              <div class="empty-state" style="grid-column:1/-1;"><i class="bx bx-loader-alt bx-spin"></i><p>Cargando promociones...</p></div>
+            </div>
+          </div>
+
+          <!-- D. SETTINGS PANEL -->
+          <div id="panel-settings" class="admin-subpanel">
+            <div class="panel-header">
+              <h2><i class="bx bx-store" style="color:var(--color-info);"></i> Configuración del Negocio</h2>
+              <button class="primary-btn btn-success" id="btn-save-settings">
+                <i class="bx bx-save"></i> Guardar Cambios
+              </button>
+            </div>
+            <form id="form-restaurant-config">
+              <div class="card glass-card" style="padding: 20px; margin-bottom: 14px;">
+                <div class="settings-section-title"><i class="bx bx-info-circle"></i> Información General</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Nombre del Negocio <span class="req">*</span></label>
+                    <input type="text" id="rest-name" class="form-control" placeholder="Ej: Tacos El Dorado" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Teléfono / WhatsApp</label>
+                    <input type="text" id="rest-phone" class="form-control" placeholder="+52 55 0000 0000">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Descripción del Negocio</label>
+                  <textarea id="rest-desc" class="form-control" rows="2" placeholder="¿De qué va tu negocio? Ej: Taquería artesanal con los mejores sabores del norte..."></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Horario de Atención</label>
+                    <input type="text" id="rest-schedule" class="form-control" placeholder="Ej: Lun-Sáb 9am-9pm">
+                  </div>
+                  <div class="form-group">
+                    <label>Dirección Física</label>
+                    <input type="text" id="rest-address" class="form-control" placeholder="Calle, Colonia, Ciudad">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>URL del Logo</label>
+                  <input type="url" id="rest-logo" class="form-control" placeholder="https://ejemplo.com/logo.png">
+                </div>
+              </div>
+
+              <div class="card glass-card" style="padding: 20px;">
+                <div class="settings-section-title"><i class="bx bx-package"></i> Envío y Pagos</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Mínimo de Envío a Domicilio ($)</label>
+                    <input type="number" id="rest-min-delivery" class="form-control" placeholder="0.00" min="0" step="0.01">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Formas de Pago Aceptadas</label>
+                  <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" id="rest-pay-cash" value="Efectivo"> Efectivo</label>
+                    <label class="checkbox-item"><input type="checkbox" id="rest-pay-card" value="Tarjeta"> Tarjeta</label>
+                    <label class="checkbox-item"><input type="checkbox" id="rest-pay-transfer" value="Transferencia"> Transferencia</label>
+                  </div>
+                </div>
+              </div>
+
+              <div id="settings-msg" class="success-msg" style="margin-top: 10px;"><i class="bx bx-check-circle"></i> ¡Configuración guardada exitosamente!</div>
+            </form>
+          </div>
+
+        </div><!-- /admin-main-panel -->
+      </div><!-- /admin-layout -->
+    </main>
+
+  </div><!-- /app-container -->
+
+  <!-- ======== MODAL: LOGIN / REGISTER ======== -->
+  <div class="modal-overlay active" id="modal-login">
+    <div class="card glass-card modal-card animate-slide-up" style="max-width: 460px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="bx bx-store-alt" style="font-size: 3rem; color: var(--color-primary); text-shadow: 0 0 20px var(--color-primary-glow);"></i>
+        <h2 style="margin-top: 10px; font-size: 1.5rem;">NEXUS <span style="color:var(--color-primary);">ADMIN</span></h2>
+        <p style="color: var(--text-muted); font-size: 0.83rem; margin-top: 4px;">Gestiona tu negocio en la plataforma Nexus AI</p>
+      </div>
+
+      <!-- TABS -->
+      <div class="login-tabs">
+        <button class="tab-btn active" id="tab-btn-login">Iniciar Sesión</button>
+        <button class="tab-btn" id="tab-btn-register">Registrar Negocio</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login">
+        <div class="form-group">
+          <label>Correo Electrónico</label>
+          <input type="email" id="login-email" class="form-control" placeholder="tu@correo.com" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="input-with-icon">
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+            <button type="button" class="input-eye-btn" id="btn-toggle-login-pass"><i class="bx bx-show"></i></button>
+          </div>
+        </div>
+        <div class="error-msg" id="login-error-msg"></div>
+        <button type="submit" class="primary-btn" style="width:100%; justify-content: center; margin-top: 6px;">
+          <i class="bx bx-log-in-circle"></i> Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- REGISTER FORM (hidden by default) -->
+      <form id="form-register" style="display:none;">
+        <div class="settings-section-title" style="margin-bottom: 12px;"><i class="bx bx-user"></i> Datos del Propietario</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre Completo <span class="req">*</span></label>
+            <input type="text" id="reg-owner-name" class="form-control" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-group">
+            <label>Teléfono <span class="req">*</span></label>
+            <input type="tel" id="reg-owner-phone" class="form-control" placeholder="+52 55 0000 0000" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Correo Electrónico <span class="req">*</span></label>
+            <input type="email" id="reg-owner-email" class="form-control" placeholder="tu@correo.com" required>
+          </div>
+          <div class="form-group">
+            <label>Contraseña <span class="req">*</span></label>
+            <div class="input-with-icon">
+              <input type="password" id="reg-owner-password" class="form-control" placeholder="Mín. 6 caracteres" required minlength="6">
+              <button type="button" class="input-eye-btn" id="btn-toggle-reg-pass"><i class="bx bx-show"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <hr class="form-divider">
+        <div class="settings-section-title" style="margin-bottom: 12px;"><i class="bx bx-store"></i> Datos del Negocio</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del Negocio <span class="req">*</span></label>
+            <input type="text" id="reg-biz-name" class="form-control" placeholder="Ej: Tacos El Dorado" required>
+          </div>
+          <div class="form-group">
+            <label>Horario de Atención <span class="req">*</span></label>
+            <input type="text" id="reg-biz-schedule" class="form-control" placeholder="Lun-Sáb 9am-9pm" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción del Negocio <span class="req">*</span></label>
+          <textarea id="reg-biz-desc" class="form-control" rows="2" placeholder="¿De qué va tu negocio?" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dirección Física <span class="req">*</span></label>
+            <input type="text" id="reg-biz-address" class="form-control" placeholder="Calle, Colonia, Ciudad" required>
+          </div>
+          <div class="form-group">
+            <label>Mínimo Envío a Domicilio ($)</label>
+            <input type="number" id="reg-biz-min-delivery" class="form-control" placeholder="0.00" min="0" step="0.01">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Formas de Pago</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="reg-pay-method" value="Efectivo" checked> Efectivo</label>
+            <label class="checkbox-item"><input type="checkbox" name="reg-pay-method" value="Tarjeta"> Tarjeta</label>
+            <label class="checkbox-item"><input type="checkbox" name="reg-pay-method" value="Transferencia"> Transferencia</label>
+          </div>
+        </div>
+
+        <div class="error-msg" id="register-error-msg"></div>
+        <button type="submit" class="primary-btn" style="width:100%; justify-content: center; margin-top: 6px;">
+          <i class="bx bx-rocket"></i> Registrar mi Negocio
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ======== MODAL: PRODUCT FORM ======== -->
+  <div class="modal-overlay" id="modal-product-form">
+    <div class="card glass-card modal-card animate-slide-up">
+      <div class="modal-header">
+        <h3 id="product-modal-title">Agregar Producto</h3>
+        <button class="btn-close-modal" id="btn-close-product-modal"><i class="bx bx-x"></i></button>
+      </div>
+      <form id="form-product">
+        <input type="hidden" id="prod-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre <span class="req">*</span></label>
+            <input type="text" id="prod-name" class="form-control" placeholder="Ej: Tacos al Pastor" required>
+          </div>
+          <div class="form-group">
+            <label>Categoría</label>
+            <input type="text" id="prod-category" class="form-control" placeholder="Ej: Tacos, Bebidas, Postres">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio ($) <span class="req">*</span></label>
+            <input type="number" id="prod-price" class="form-control" placeholder="0.00" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>URL de Imagen</label>
+            <input type="url" id="prod-img" class="form-control" placeholder="https://...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="prod-desc" class="form-control" rows="2" placeholder="Breve descripción del producto..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="primary-btn btn-sm" style="background: rgba(255,255,255,0.07); color: var(--text-muted);" id="btn-cancel-product-modal">Cancelar</button>
+          <button type="submit" class="primary-btn btn-sm"><i class="bx bx-save"></i> Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======== MODAL: PROMO FORM ======== -->
+  <div class="modal-overlay" id="modal-promo-form">
+    <div class="card glass-card modal-card animate-slide-up">
+      <div class="modal-header">
+        <h3 id="promo-modal-title">Nueva Promoción</h3>
+        <button class="btn-close-modal" id="btn-close-promo-modal"><i class="bx bx-x"></i></button>
+      </div>
+      <form id="form-promo">
+        <input type="hidden" id="promo-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Título <span class="req">*</span></label>
+            <input type="text" id="promo-title" class="form-control" placeholder="Ej: Combo Fiesta" required>
+          </div>
+          <div class="form-group">
+            <label>Valor / Etiqueta <span class="req">*</span></label>
+            <input type="text" id="promo-value" class="form-control" placeholder="Ej: 2x1, 20% OFF, -$15" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="promo-desc" class="form-control" rows="2" placeholder="Detalla la promo..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>URL de Imagen (opcional)</label>
+            <input type="url" id="promo-img" class="form-control" placeholder="https://...">
+          </div>
+          <div class="form-group" style="display:flex; align-items:flex-end;">
+            <label class="checkbox-item" style="margin-bottom: 0; gap: 10px; font-size: 0.88rem;">
+              <input type="checkbox" id="promo-active" checked> Promoción activa
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="primary-btn btn-sm" style="background: rgba(255,255,255,0.07); color: var(--text-muted);" id="btn-cancel-promo-modal">Cancelar</button>
+          <button type="submit" class="primary-btn btn-sm"><i class="bx bx-save"></i> Guardar Promoción</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

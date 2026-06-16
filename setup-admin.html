@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Admin — Tu Colonia en un Click</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #0b0f19;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      color: #dfe2f3;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .logo-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo-area h1 { font-size: 1.6rem; font-weight: 800; }
+    .logo-area h1 span { color: #7c6aff; }
+    .logo-area p { color: #8892a4; font-size: 0.85rem; margin-top: 6px; }
+    .badge {
+      display: inline-block;
+      background: rgba(124,106,255,0.15);
+      border: 1px solid rgba(124,106,255,0.3);
+      color: #a89bff;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8892a4;
+      margin-bottom: 6px;
+      margin-top: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    input, select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #dfe2f3;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: #7c6aff; }
+    select option { background: #1a1f30; }
+    .btn {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #7c6aff, #5b4ccc);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    #status-box {
+      margin-top: 20px;
+      border-radius: 14px;
+      padding: 16px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+      line-height: 1.5;
+    }
+    .status-success {
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.3);
+      color: #34d399;
+    }
+    .status-error {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #f87171;
+    }
+    .status-info {
+      background: rgba(124,106,255,0.1);
+      border: 1px solid rgba(124,106,255,0.3);
+      color: #a89bff;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin: 28px 0 20px;
+    }
+    .info-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      color: #8892a4;
+      line-height: 1.6;
+    }
+    .info-box strong { color: #dfe2f3; }
+    .link-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .link-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(124,106,255,0.4);
+      color: #a89bff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .link-btn:hover { background: rgba(124,106,255,0.1); }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo-area">
+    <div class="badge">🔧 Configuración Inicial</div>
+    <h1>Tu Colonia <span>Admin</span></h1>
+    <p>Crea tu cuenta de administrador en Firestore</p>
+  </div>
+
+  <form id="setup-form">
+    <label>Nombre completo</label>
+    <input type="text" id="inp-name" placeholder="Ej: Patricia Cabrera" required>
+
+    <label>Correo electrónico</label>
+    <input type="email" id="inp-email" value="searmoco@gmail.com" required>
+
+    <label>Contraseña</label>
+    <input type="password" id="inp-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+
+    <label>Teléfono (opcional)</label>
+    <input type="tel" id="inp-phone" placeholder="Ej: 5512345678">
+
+    <label>Rol</label>
+    <select id="inp-role">
+      <option value="admin">Admin — Acceso a Admin + Repartidor</option>
+      <option value="owner">Owner (Dueño) — Solo su negocio</option>
+    </select>
+
+    <button type="submit" class="btn" id="btn-create">
+      ✅ Crear Usuario en Firestore
+    </button>
+  </form>
+
+  <div id="status-box"></div>
+
+  <hr class="divider">
+
+  <div class="info-box">
+    <strong>¿Qué hace esta página?</strong><br>
+    Guarda tu usuario con rol <strong>admin</strong> en la base de datos Firebase (colección <code>users</code>).
+    Después podrás iniciar sesión en las apps con ese correo y contraseña.<br><br>
+    <strong>Proyecto Firebase:</strong> <code>bot-nuevo-bdf67</code>
+  </div>
+
+  <div class="link-btns" id="link-btns" style="display:none;">
+    <a href="./index.html" class="link-btn">🏪 Abrir Panel Admin</a>
+    <a href="../nexus-repartidor-app/index.html" class="link-btn">🛵 Panel Repartidor</a>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCy11ISYlKFtDF21sgeMnDSJ6GvLC5IzUo",
+    authDomain: "bot-nuevo-bdf67.firebaseapp.com",
+    projectId: "bot-nuevo-bdf67",
+    storageBucket: "bot-nuevo-bdf67.firebasestorage.app",
+    messagingSenderId: "124378699288",
+    appId: "1:124378699288:web:de728dc8b1f4c32aba156d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const form = document.getElementById('setup-form');
+  const btn = document.getElementById('btn-create');
+  const statusBox = document.getElementById('status-box');
+  const linkBtns = document.getElementById('link-btns');
+
+  function showStatus(msg, type = 'info') {
+    statusBox.className = `status-${type}`;
+    statusBox.innerHTML = msg;
+    statusBox.style.display = 'block';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name     = document.getElementById('inp-name').value.trim();
+    const email    = document.getElementById('inp-email').value.trim().toLowerCase();
+    const password = document.getElementById('inp-password').value.trim();
+    const phone    = document.getElementById('inp-phone').value.trim();
+    const role     = document.getElementById('inp-role').value;
+
+    if (!name || !email || !password) {
+      showStatus('❌ Por favor llena todos los campos requeridos.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creando usuario...';
+    showStatus('⏳ Conectando con Firebase Firestore...', 'info');
+
+    try {
+      // Check if email already exists
+      const q = query(collection(db, 'users'), where('email', '==', email));
+      const existing = await getDocs(q);
+
+      if (!existing.empty) {
+        showStatus(`⚠️ El correo <strong>${email}</strong> ya está registrado en Firestore.<br>Puedes usarlo directamente para iniciar sesión.`, 'info');
+        btn.disabled = false;
+        btn.innerHTML = '✅ Crear Usuario en Firestore';
+        linkBtns.style.display = 'flex';
+        return;
+      }
+
+      // Create user document
+      const docRef = await addDoc(collection(db, 'users'), {
+        name,
+        email,
+        password,
+        phone: phone || '',
+        role,
+        restaurantId: 'all',
+        createdAt: serverTimestamp()
+      });
+
+      showStatus(`
+        ✅ <strong>¡Usuario creado exitosamente!</strong><br><br>
+        📧 Correo: <strong>${email}</strong><br>
+        🔑 Contraseña: <strong>${password}</strong><br>
+        👤 Rol: <strong>${role}</strong><br>
+        🆔 ID: <code style="font-size:0.75rem;">${docRef.id}</code><br><br>
+        Ya puedes iniciar sesión en ambas apps con estas credenciales.
+      `, 'success');
+
+      linkBtns.style.display = 'flex';
+      btn.innerHTML = '✅ Usuario Creado';
+
+    } catch (err) {
+      showStatus(`❌ <strong>Error al conectar con Firebase:</strong><br>${err.message}<br><br>
+        <small>Verifica que las reglas de Firestore permitan escritura, o crea el usuario manualmente en la consola de Firebase.</small>`, 'error');
+      btn.disabled = false;
+      btn.innerHTML = '✅ Crear Usuario en Firestore';
+    }
+  });
+</script>
+
+</body>
+</html>
